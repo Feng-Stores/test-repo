@@ -1,7 +1,3 @@
-// Set this to your Container App URL after first backend deployment.
-// The CI workflow substitutes __BACKEND_URL__ automatically once
-// BACKEND_URL is configured as a GitHub Actions variable.
-window.BACKEND_URL =
-  typeof __BACKEND_URL__ !== 'undefined'
-    ? '__BACKEND_URL__'
-    : 'http://localhost:3000';
+// Replaced by CI with the actual backend URL (vars.BACKEND_URL).
+// For local dev, change this to http://localhost:3000
+window.BACKEND_URL = '__BACKEND_URL__';
