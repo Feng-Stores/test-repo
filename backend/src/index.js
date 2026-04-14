@@ -12,7 +12,7 @@ app.get('/api/health', (_req, res) => {
 });
 
 app.get('/api/hello', (_req, res) => {
-  res.json({ message: 'Hello from Azure Container App!' });
+  res.json({ message: 'Hello from Azure Container App! (v2)' });
 });
 
 app.listen(PORT, () => {
