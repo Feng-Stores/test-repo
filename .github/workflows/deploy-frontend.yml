@@ -1,0 +1,42 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/**'
+      - '.github/workflows/deploy-frontend.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write   # required for OIDC login
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id:       ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id:       ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      # Inject the backend URL so the static site knows where to call.
+      # Set BACKEND_URL as a GitHub Actions variable (repo → Settings → Variables).
+      - name: Inject backend URL
+        run: |
+          sed -i "s|__BACKEND_URL__|${{ vars.BACKEND_URL }}|g" frontend/config.js
+
+      - name: Upload to storage static website
+        run: |
+          az storage blob upload-batch \
+            --account-name ${{ vars.STORAGE_ACCOUNT_NAME }} \
+            --destination '$web' \
+            --source ./frontend \
+            --overwrite \
+            --auth-mode login

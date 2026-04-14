@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Azure Test App</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 60px auto; padding: 0 16px; }
+    button { padding: 8px 16px; cursor: pointer; margin-top: 12px; }
+    pre { background: #f4f4f4; padding: 12px; border-radius: 4px; }
+    .ok   { color: green; }
+    .fail { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Azure Test App</h1>
+
+  <h2>Backend health</h2>
+  <p id="health">Checking…</p>
+
+  <h2>Hello endpoint</h2>
+  <button onclick="fetchHello()">Fetch /api/hello</button>
+  <pre id="result">—</pre>
+
+  <script src="config.js"></script>
+  <script>
+    const base = window.BACKEND_URL || 'http://localhost:3000';
+
+    async function checkHealth() {
+      const el = document.getElementById('health');
+      try {
+        const res  = await fetch(`${base}/api/health`);
+        const data = await res.json();
+        el.textContent = `${data.status} — ${data.timestamp}`;
+        el.className = 'ok';
+      } catch (e) {
+        el.textContent = `unreachable (${e.message})`;
+        el.className = 'fail';
+      }
+    }
+
+    async function fetchHello() {
+      const el = document.getElementById('result');
+      try {
+        const res  = await fetch(`${base}/api/hello`);
+        const data = await res.json();
+        el.textContent = JSON.stringify(data, null, 2);
+      } catch (e) {
+        el.textContent = `Error: ${e.message}`;
+      }
+    }
+
+    checkHealth();
+  </script>
+</body>
+</html>
